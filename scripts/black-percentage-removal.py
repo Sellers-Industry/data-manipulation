@@ -4,10 +4,10 @@
 #   prohibited. Proprietary and confidential.
 #
 #   author: Evan Sellers <sellersew@gmail.com>
-#   date: Thu Dec 31 2020
+#   date: Sat Jan 2 2021
 #   file: black-overflow-extraction.py
-#   project: Aris Weapon Detection
-#   purpose: Remove Images w/ percentage black
+#   project: Data Manipulation Library
+#   purpose: Remove Images w/ high percentage black
 #
 #
 
