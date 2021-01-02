@@ -3,6 +3,20 @@ Data Manipulation Programs in Python
 
 <br>
 
+## Back Precentage Removal (PNG/JPG)
+This will remove all images that have larger than a specific amount of black. This is used to detect errors cause by cropping images outside the bounds of the image. It will scan a directory that the script is ran from or a relative directory, it will then move all the images that contain a higher precentage of black set by the `PERCENTAGE_THRESHOLD` settings. These images will be moved to a sub directory `/output`. Ensure this directory is already created inside the directory you are scanning before the script is started.
+
+The `COLOR_THRESHHOLD` setting sets what is considered to be black by the system on the scale 0-255. So if the pixel value is lower than the color threshhold number is will be counted as black in the total. If the total amount of black pixels is greater than the `PERCENTAGE_THRESHOLD` times the amount of pixels in the image, the image will be moved to the output sub-directory.
+
+**Usage**<br>
+You can either run the script in a current directory or run it in a relalitive directory.
+```sh
+python black-percentage-removal.py
+python black-percentage-removal.py [ directory ]
+```
+
+<br>
+
 ## Video Frame Extraction (MP4)
 The video frame extraction will take a `.mp4` files in a directory and extract all frames from the videos and place them in the output folder inside the directory that was scanned. The images will be placed in a sub version of the folder selected in the `/output` directory. Ensure this directory is already created inside the directory you are scanning before the script is started. Inside the script you can set a vertical or horizontal flip that will be applied to the image before saving.
 
