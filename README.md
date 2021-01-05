@@ -17,6 +17,18 @@ python black-percentage-removal.py [ directory ]
 
 <br>
 
+## File Rename (ALL)
+Will rename all files in a specific directory to a numerical file name. Go to the directory you would like to rename all the files in. Then run the script. You can set the `DIR_PATH` which is the path the script will be excicuted in, by default it starts in the directory it is in. The `PREPEND` sets what is put in front of the file name, and `APPEND` is what is added to the end of the filename, not including the extension. The `S_INDEX` is the starting number for the numeral names, by default it is set to zero but you could set it to what ever you want if you want to merge multiple directries later on. The `DIGIT_S` is the amount of digits that will be filled, for example is `DIGIT_S=3` then the number `1` will be represented as `001`.
+
+**Usage**<br>
+Will only run in the folder the script in ran in.
+```sh
+python file-rename.py
+```
+
+
+<br>
+
 ## Video Frame Extraction (MP4)
 The video frame extraction will take a `.mp4` files in a directory and extract all frames from the videos and place them in the output folder inside the directory that was scanned. The images will be placed in a sub version of the folder selected in the `/output` directory. Ensure this directory is already created inside the directory you are scanning before the script is started. Inside the script you can set a vertical or horizontal flip that will be applied to the image before saving.
 
