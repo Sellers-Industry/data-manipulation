@@ -30,16 +30,24 @@ python file-rename.py
 <br>
 
 ## Video Frame Extraction (MP4)
-The video frame extraction will take a `.mp4` files in a directory and extract all frames from the videos and place them in the output folder inside the directory that was scanned. The images will be placed in a sub version of the folder selected in the `/output` directory. Ensure this directory is already created inside the directory you are scanning before the script is started. Inside the script you can set a vertical or horizontal flip that will be applied to the image before saving.
+The video frame extraction will take a `.mp4` file or a directory of `.mp4` files and extract each frame or nth frames from them, placing them in a directory. Ensure the output directory is already created before running the function.
 
-Videos will be saved in the following naming schema: `{PREFIX}-{VIDEO_NUM}-{NTH_FRAME_NUM}.jpg`. The nth frame number will be the total number of frames saved, not the amount frames that have been scanned. The Nth setting mods the number of frames. So if you Nth frame is set to 10, every 10th frame will be saved. For example, the first video first frame will be saved as `frame-0-0.jpg` and the 10 frame ( @ Nth=10 ) would be `frame-0-1.jpg`. You can also change the starting `video_num` so instead of starting at `0` it can start anywhere. This features is if you would like to combine multiple later you do not end up with duplicated numbers.
+| Flag | Description |
+|---|---|
+| `-h, --help` | show this help message and exit |
+| `--start STARTING_COUNT` | Starting video file count, only if perserve file off (default:0) |
+| `--prefix FILENAME_PREFIX` | Video file prefix, only if perserve file off (default:video) |
+| `--perserve` | Perserve filename will not use prefix or video count, but use original filename with frame number |
+| `--vertical` | Flips all images vertically |
+| `--horizontal` | Flips all images horizontally |
+| `--output OUTPUT, -o OUTPUT` | Output directory, relative or absolute to input (default:output) |
+| `--input INPUT, -i INPUT` | Input directory or file, relative or absolute(default:./) |
 
 
 **Usage**<br>
-You can either run the script in a current directory or run it in a relalitive directory.
+Please note if you do not specify an input directory or input file will use the current directory you are in. If you do not specify output it will use `./output` relative to your input.
 ```sh
 python video-frame-extraction.py
-python video-frame-extraction.py [ directory ]
-python video-frame-extraction.py [ directory ] [ Nth frame capture ]
-python video-frame-extraction.py [ directory ] [ Nth frame capture ] [ starting video_num ]
+python video-frame-extraction.py -i videos -o frames -n 20
+python video-frame-extraction.py -i video.mp4 -n 20
 ```

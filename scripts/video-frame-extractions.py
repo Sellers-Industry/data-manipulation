@@ -12,98 +12,183 @@
 #
 
 
-import cv2
+import argparse
+import traceback
 import os
-import sys
-import traceback 
+import cv2
 
 
-# Settings
-DEFUALT_CAPTURE_NTH  = 10                                                       # default capture every Nth frame
-DEFAULT_STARTING_NUM = 0                                                        # default starting filename number
-EXPORT_TYPE          = "jpg"                                                    # export file type
-EXPORT_PREFIX        = "frame"                                                  # prefix applied to file
-VERTICAL_FLIP        = False                                                    # vertically flip the image
-HORIZONTAL_FLIP      = False                                                    # horizontally flip the image
-OUTPUT_FOLDER        = "output"                                                 # sub-directory to export to
+# Default Settings
+DEFUALT_CAPTURE_NTH       = 10                                                  # capture every Nth frame
+DEFAULT_STARTING_NUM      = 0                                                   # start video count from
+DEFAULT_PREFIX            = "video"                                             # prefix if perserve off
+DEFAULT_FLIP_VERTICAL     = False                                               # vertically flip image
+DEFAULT_FLIP_HORIZONTAL   = False                                               # horizontally flip image
+DEFAULT_EXPORT_DIRECTORY  = "output"                                            # defualt export folder
 
 
-# Capture Video Frame
-def captureVideo( videoFile, vidNum, nth, directory ):
-    print( videoFile )
-    cap = cv2.VideoCapture( videoFile )
-    hasFrame = True
-    count    = 0
+"""
+    Process File
+"""
+def processFile( file, video_count, settings ):
+    capture    = cv2.VideoCapture( file )
+    hasFrame   = True
+    countFrame = 0
+
     while hasFrame:
-        hasFrame, image = cap.read()
-        if count % int( nth ) == 0:
-            filename = "{}-{}-{}.{}".format(
-                    EXPORT_PREFIX,
-                    vidNum,
-                    int( count / int( nth ) ),
-                    EXPORT_TYPE
-                )
-            fileD = os.path.join( directory, OUTPUT_FOLDER )
-            fileD = os.path.join( fileD, filename )
-            if VERTICAL_FLIP:
-                image = cv2.flip( image, 0 ) 
-            if HORIZONTAL_FLIP:
-                image = cv2.flip( image, 1 ) 
-            cv2.imwrite( fileD, image )
-        count += 1
+        hasFrame, frame = capture.read()
+        if countFrame % int( settings.nth_frame ) == 0:
+            if ( settings.flip_vertical ):
+                frame = cv2.flip( frame, 0 )
+
+            if ( settings.flip_horizontal ):
+                frame = cv2.flip( frame, 1 )
+
+            if ( settings.perserve_filename ):
+                file_prefix = os.path.basename( os.path.splitext( file )[ 0 ] )
+            else:
+                file_prefix = "{}-{}".format(
+                            settings.filename_prefix,
+                            video_count
+                        )
+
+            filename = "{}-frame-{}.jpg".format( file_prefix, countFrame )
+            filepath = os.path.join( settings.output, filename )
+            print( filepath )
+            cv2.imwrite( filepath, frame )
+        countFrame += 1
 
 
-# Process Directory of Videos
-def processDirectory( directory, nth, starting_video_num ):
-    video_count = starting_video_num - 1
+"""
+    Process Directoires
+"""
+def processDirectory( directory, settings ):
+    video_count = settings.starting_count
     for filename in os.listdir( directory ):
         if filename.endswith( ".mp4" ):
             try:
-                video_count += 1
-                captureVideo(
+                processFile(
                         os.path.join( directory, filename ),
                         video_count,
-                        nth,
-                        directory
+                        settings
                     )
                 print( "Video {} Completed".format( video_count ) )
             except Exception as e:
                 traceback.print_exc() 
-                print( e )
                 print( "Error Processing {}".format( filename ) )
+            video_count += 1
 
 
-# Process Arguments
-# should update to use argument library
+"""
+    Main Parsing Arguments
+"""
 def main():
-    if len( sys.argv ) is 1:
-        processDirectory(
-                os.getcwd(),
-                DEFUALT_CAPTURE_NTH,
-                DEFAULT_STARTING_NUM
+    parser = argparse.ArgumentParser( description="Extract frames from mp4" )
+
+    # Nth Frame Counter
+    parser.add_argument(
+                "--frame", "-n",
+                dest='nth_frame',
+                type=int,
+                default=DEFUALT_CAPTURE_NTH,
+                help="Extracts every Nth frame (default:{})"
+                        .format( DEFUALT_CAPTURE_NTH )
             )
-        return
-    if len( sys.argv ) is 2:
-        processDirectory(
-                os.path.join( os.getcwd(), sys.argv[ 1 ] ),
-                DEFUALT_CAPTURE_NTH,
-                DEFAULT_STARTING_NUM
+
+    # Starting frame count
+    parser.add_argument(
+                "--start",
+                dest='starting_count',
+                type=int,
+                default=DEFAULT_STARTING_NUM,
+                help="""Starting video file count, only if perserve
+                        file off (default:{})"""
+                        .format( DEFAULT_STARTING_NUM )
             )
-        return
-    if len( sys.argv ) is 3:
-        processDirectory(
-                os.path.join( os.getcwd(), sys.argv[ 1 ] ),
-                sys.argv[ 2 ],
-                DEFAULT_STARTING_NUM
+
+    # Starting frame count
+    parser.add_argument(
+                "--prefix",
+                dest='filename_prefix',
+                type=str,
+                default=DEFAULT_PREFIX,
+                help="""Video file prefix, only if perserve file
+                        off (default:{})"""
+                        .format( DEFAULT_PREFIX )
             )
-        return
-    if len( sys.argv ) is 4:
-        processDirectory(
-                os.path.join( os.getcwd(), sys.argv[ 1 ] ),
-                sys.argv[ 2 ],
-                sys.argv[ 3 ],
+
+    # Perserve file name
+    parser.add_argument(
+                "--perserve",
+                dest='perserve_filename',
+                action='store_true',
+                help="""Perserve filename will not use prefix or video
+                        count, but use original filename with frame number"""
             )
+
+    # Vertical Flip
+    parser.add_argument(
+                "--vertical",
+                dest='flip_vertical',
+                action='store_true',
+                help="Flips all images vertically"
+            )
+
+    # Horizontal Flip
+    parser.add_argument(
+                "--horizontal",
+                dest='flip_horizontal',
+                action='store_true',
+                help="Flips all images horizontally"
+            )
+
+    # Output Directory
+    parser.add_argument(
+                "--output", "-o",
+                dest='output',
+                type=str,
+                default=DEFAULT_EXPORT_DIRECTORY,
+                help="""Output directory, relative or absolute
+                        to input (default:{})"""
+                        .format( DEFAULT_EXPORT_DIRECTORY )
+            )
+
+    # Input Directory
+    parser.add_argument(
+                "--input", "-i",
+                dest='input',
+                type=str,
+                default="",
+                help="""Input directory or file, relative or 
+                        absolute (default:./)"""
+            )
+
+    # Splice Arguments
+    args = parser.parse_args()
+
+    # Setupt Relative Input & Outputs
+    args.input  = os.path.join( os.getcwd(), args.input  )
+    args.output = os.path.join( args.input, args.output  )
+
+    # Output not directory
+    if not os.path.isdir( args.output ):
+        print( "Unable to find output directory: {}".format( args.output ) )
         return
+
+    # Directory Process
+    if os.path.isdir( args.input ):
+        processDirectory( args.input, args )
+        return
+
+    # File process
+    if os.path.isfile( args.input ):
+        if not os.path.splitext( args.input )[ 1 ]:
+            print( "Input file is not of MP4 format: {}".format( args.input ) )
+        processFile( args.input, 0, args )
+        return
+
+    # Error
+    print( "Unable to process input: {}".format( args.output ) )
 
 
 main()
