@@ -1,7 +1,6 @@
 #
-#   Copyright (C) 2020 Sellers Industry - All Rights Reserved
-#   Unauthorized copying of this file, via any medium is strictly
-#   prohibited. Proprietary and confidential.
+#   Copyright (C) 2021 Sellers Industry
+#   distributed under the MIT License
 #
 #   author: Evan Sellers <sellersew@gmail.com>
 #   date: Sat Jan 2 2021
@@ -10,8 +9,6 @@
 #   purpose: Remove Images w/ high percentage black
 #
 #
-
-
 
 
 from PIL import Image
