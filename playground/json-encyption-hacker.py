@@ -6,7 +6,7 @@ file  = open( input_img, "rb" )
 image = file.read() 
 file.close()
 
-for test_key_code in range( 1, 255 ):
+for test_key_code in range( 0, 255 ):
     file  = open( input_img, "rb" )
     image = file.read() 
     file.close()
@@ -21,4 +21,4 @@ for test_key_code in range( 1, 255 ):
             print( imageBytes.decode() )
             print( "Code: ", test_key_code )
     except:
-        print( "error" )
+        pass
